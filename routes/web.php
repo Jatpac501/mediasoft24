@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\ChecklistController;
+use App\Http\Controllers\ChecklistItemController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,5 +21,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('checklists', ChecklistController::class)->middleware(['auth', 'verified']);
+
+Route::post('/checklists/{checklist}/items', [ChecklistItemController::class, 'store'])->middleware(['auth', 'verified'])->name('checklists.items.store');
+Route::patch('/checklists/{checklist}/items/{item}', [ChecklistItemController::class, 'update'])->name('checklists.items.update');
 
 require __DIR__.'/auth.php';

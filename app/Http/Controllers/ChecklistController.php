@@ -22,7 +22,7 @@ class ChecklistController extends Controller
      */
     public function create()
     {
-        //
+        return view('checklists.create');
     }
 
     /**
@@ -30,7 +30,16 @@ class ChecklistController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+        ]);
+
+        Checklist::create([
+            'user_id' => Auth::id(),
+            'title' => $request->title,
+        ]);
+
+        return redirect()->route('checklists.index')->with('success', 'Чек-лист создан.');
     }
 
     /**
@@ -52,9 +61,15 @@ class ChecklistController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Checklist $checklist)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+        ]);
+
+        $checklist->update(['title' => $request->title]);
+
+        return response()->json(['success' => true]);
     }
 
     /**
@@ -62,6 +77,9 @@ class ChecklistController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $checklist = Checklist::where('user_id', Auth::id())->findOrFail($id);
+        $checklist->delete();
+
+        return redirect()->route('checklists.index')->with('success', 'Чек-лист удален.');
     }
 }
